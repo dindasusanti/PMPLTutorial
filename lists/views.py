@@ -8,8 +8,15 @@ def home_page(request):
 		Item.objects.create(text=request.POST['item_text'])
 		return redirect('/')
 	
+	if Item.objects.count()==0:
+		comment = 'yey, waktunya berlibur'
+	elif Item.objects.count()<5:
+		comment = 'sibuk tapi santai'
+	else:
+		comment = 'oh tidak'	
+
 	items = Item.objects.all()		
-	return render(request, 'home.html', {'items': items})
+	return render(request, 'home.html', {'items': items, 'comment':comment})
 		#new_item_text = request.POST['item_text']
 		#Item.objects.create(text=new_item_text)
 	#else:

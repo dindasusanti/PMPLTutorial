@@ -32,7 +32,7 @@ class HomePageTest(TestCase):
 	def test_home_page_returns_correct_html(self):
 		request = HttpRequest()
 		response = home_page(request)
-		expected_html = render_to_string('home.html')
+		expected_html = render_to_string('home.html', {'comment':'yey, waktunya berlibur'})
 		#self.assertTrue(response.content.startswith(b'<html>'))
 		#self.assertIn(b'<title>To-Do</title>',response.content)
 		#self.assertTrue(response.content.strip().endswith(b'</html>'))
@@ -76,3 +76,32 @@ class HomePageTest(TestCase):
 
 		self.assertIn('itemey 1', response.content.decode())
 		self.assertIn('itemey 2', response.content.decode())
+
+	def test_home_page_display_to_do_list_empty(self):
+		request = HttpRequest()
+		response = home_page(request)
+		
+		self.assertEqual(Item.objects.count(), 0)
+		self.assertIn('yey, waktunya berlibur', response.content.decode())
+
+	def test_home_page_display_to_do_list_less_5(self):
+		Item.objects.create(text='Item 1')
+		
+		request = HttpRequest()
+		response = home_page(request)
+
+		self.assertLess(Item.objects.count(), 5)
+		self.assertIn('sibuk tapi santai', response.content.decode())
+
+	def test_home_page_display_to_do_list_greater_equal_5(self):
+		Item.objects.create(text='Item 1')
+		Item.objects.create(text='Item 2')
+		Item.objects.create(text='Item 3')
+		Item.objects.create(text='Item 4')
+		Item.objects.create(text='Item 5')
+
+		request = HttpRequest()
+		response = home_page(request)
+
+		self.assertGreaterEqual(Item.objects.count(), 5)
+		self.assertIn('oh tidak', response.content.decode())
