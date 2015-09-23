@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.http import HttpRequest
 from django.template.loader import render_to_string
 
-from lists.views import home_page
+from lists.views import home_page, view_list
 from lists.models import Item, List
 
 class ListAndItemModelTest(TestCase):
@@ -100,7 +100,7 @@ class HomePageTest(TestCase):
 		Item.objects.create(text='itemey 1', list=list_)		
 
 		request = HttpRequest()
-		response = home_page(request)
+		response = view_list(request, list_.id)
 
 		self.assertLess(Item.objects.filter(list_id=list_.id).count(), 5)
 		self.assertIn('sibuk tapi santai', response.content.decode())
@@ -120,7 +120,7 @@ class HomePageTest(TestCase):
 		#Item.objects.create(text='Item 5')
 
 		request = HttpRequest()
-		response = home_page(request)
+		response = view_list(request, list_.id)
 
 		self.assertGreaterEqual(Item.objects.filter(list_id=list_.id).count(), 5)
 		self.assertIn('oh tidak', response.content.decode())
